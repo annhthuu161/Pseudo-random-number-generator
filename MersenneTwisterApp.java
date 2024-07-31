@@ -60,16 +60,36 @@ public class MersenneTwisterApp {
         try {
             int minValue = Integer.parseInt(minField.getText());
             int maxValue = Integer.parseInt(maxField.getText());
-
+    
             if (minValue > maxValue) {
                 JOptionPane.showMessageDialog(frame, "Minimum value cannot be greater than maximum value.", "Invalid Range", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+    
             long seed = System.currentTimeMillis(); // Using the current time as a seed
-            MersenneTwisterRNG rng = new MersenneTwisterRNG(seed);
+            MersenneTwisterRNG  rng = new MersenneTwisterRNG (seed);
+    
+            // Measure performance metrics
+            long startTime = System.nanoTime();
+            long startMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    
             int randomNumber = rng.randint(minValue, maxValue);
+    
+            long endTime = System.nanoTime();
+            long endMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    
+            long timeTaken = endTime - startTime;
+            long memoryUsed = endMemory - startMemory;
+    
+            // Throughput: number of operations per second (1 operation / time in seconds)
+            double throughput = 1.0 / (timeTaken / 1_000_000_000.0); // timeTaken is in nanoseconds
+    
             resultLabel.setText("Random Number: " + randomNumber);
+    
+            // Print performance metrics to console
+            System.out.println("Latency: " + timeTaken + " nanoseconds");
+            System.out.println("Throughput: " + throughput + " operations/second");
+            System.out.println("Memory used: " + memoryUsed + " bytes");
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(frame, "Please enter valid integer values for min and max.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
         }
